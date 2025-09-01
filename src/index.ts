@@ -27,7 +27,7 @@ export default function animatedWebpOptimizer(
 
       // bundle에서 WebP 파일들을 찾아서 해시 매핑 생성
       const webpAssets = findWebpAssets(bundle, buildOutputDir);
-      
+
       if (webpAssets.length === 0) {
         if (mergedOptions.verbose) {
           console.log(`[${PLUGIN_NAME}] No WebP files found in bundle.`);
@@ -36,7 +36,9 @@ export default function animatedWebpOptimizer(
       }
 
       if (mergedOptions.verbose) {
-        console.log(`[${PLUGIN_NAME}] Found ${webpAssets.length} WebP files in bundle.`);
+        console.log(
+          `[${PLUGIN_NAME}] Found ${webpAssets.length} WebP files in bundle.`
+        );
       }
 
       // 해시 매핑 정보를 옵션에 저장
@@ -58,25 +60,25 @@ export default function animatedWebpOptimizer(
 
 function findWebpAssets(bundle: any, outDir: string): WebPAsset[] {
   const webpAssets: WebPAsset[] = [];
-  
+
   for (const fileName in bundle) {
     const asset = bundle[fileName];
-    
+
     // WebP 파일인지 확인
-    if (fileName.toLowerCase().endsWith('.webp')) {
+    if (fileName.toLowerCase().endsWith(".webp")) {
       const sourcePath = asset.source || asset.fileName || fileName;
       const outputPath = path.join(outDir, fileName);
-      
+
       webpAssets.push({
         sourcePath,
         fileName,
         outputPath,
         size: asset.size || 0,
-        isAnimated: false // 나중에 detectAnimatedWebP로 확인
+        isAnimated: false, // 나중에 detectAnimatedWebP로 확인
       });
     }
   }
-  
+
   return webpAssets;
 }
 
@@ -99,12 +101,16 @@ export async function processBundleFiles(options: any) {
     // bundle에서 찾은 WebP 파일들이 있으면 그것들을 사용, 없으면 전체 스캔
     if (options.webpAssets && options.webpAssets.length > 0) {
       if (options.verbose) {
-        console.log(`[${PLUGIN_NAME}] Processing ${options.webpAssets.length} WebP files from bundle...`);
+        console.log(
+          `[${PLUGIN_NAME}] Processing ${options.webpAssets.length} WebP files from bundle...`
+        );
       }
       await processor.processBundleAssets(options.webpAssets, distDir);
     } else {
       if (options.verbose) {
-        console.log(`[${PLUGIN_NAME}] No bundle assets found, scanning all directories...`);
+        console.log(
+          `[${PLUGIN_NAME}] No bundle assets found, scanning all directories...`
+        );
       }
       // 프로젝트 루트부터 모든 폴더를 재귀적으로 검색
       await processor.processDirectory(projectRoot, distDir);
