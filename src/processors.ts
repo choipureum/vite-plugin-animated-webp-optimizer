@@ -13,6 +13,7 @@ export class WebPProcessor {
   private webpFiles: string[] = [];
   private processedCount = 0;
   private totalCount = 0;
+  private cache = new Map<string, { size: number; mtime: number }>();
 
   constructor(private options: ProcessOptions) {}
 
@@ -181,6 +182,43 @@ export class WebPProcessor {
         console.log(`🔍 Processing: ${fileName} (${formatBytes(fileSize)})`);
       }
 
+      if (
+        this.options.skipIfSmaller > 0 &&
+        fileSize < this.options.skipIfSmaller
+      ) {
+        if (this.options.verbose) {
+          console.log(
+            `⏭️  File already small enough (${formatBytes(
+              fileSize
+            )} < ${formatBytes(
+              this.options.skipIfSmaller
+            )}), skipping optimization: ${fileName}`
+          );
+        }
+        const finalOutputPath = path.join(distDir, fileName);
+        fs.copyFileSync(asset.sourcePath, finalOutputPath);
+        this.processedCount++;
+        return;
+      }
+
+      const cacheKey = asset.sourcePath;
+      const stats = fs.statSync(asset.sourcePath);
+      const cached = this.cache.get(cacheKey);
+
+      if (
+        cached &&
+        cached.size === stats.size &&
+        cached.mtime === stats.mtime.getTime()
+      ) {
+        if (this.options.verbose) {
+          console.log(`⏭️  File unchanged, using cache: ${fileName}`);
+        }
+        const finalOutputPath = path.join(distDir, fileName);
+        fs.copyFileSync(asset.sourcePath, finalOutputPath);
+        this.processedCount++;
+        return;
+      }
+
       const isAnimated =
         asset.isAnimated || (await this.detectAnimatedWebP(asset.sourcePath));
 
@@ -238,6 +276,11 @@ export class WebPProcessor {
 
         fs.unlinkSync(outputPath);
       }
+
+              this.cache.set(cacheKey, {
+        size: stats.size,
+        mtime: stats.mtime.getTime(),
+      });
 
       this.processedCount++;
     } catch (error) {
@@ -394,6 +437,7 @@ export class WebPProcessor {
             : 0,
         delay: metadata.delay || undefined,
         force: true,
+        nearLossless: false,
       };
 
       await processedImage.webp(webpOptions).toFile(outputPath);
@@ -422,6 +466,7 @@ export class WebPProcessor {
           effort: this.options.effort,
           smartSubsample: true,
           lossless: false,
+          nearLossless: false,
         })
         .toFile(outputPath);
 

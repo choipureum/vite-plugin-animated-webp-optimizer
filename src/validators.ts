@@ -59,19 +59,19 @@ export function validateOptions(
 
 export function getDefaultOptions(): Required<AnimatedWebpOptimizerOptions> {
   return {
-    quality: 80,
-    effort: 4,
+    quality: 85,
+    effort: 2,
     verbose: false,
     maxFileSize: 0,
-    skipIfSmaller: 0,
+    skipIfSmaller: 100 * 1024,
     animationQuality: 80,
-    animationCompression: 4,
+    animationCompression: 2,
     optimizeAnimation: true,
     maxWidth: 0,
     maxHeight: 0,
-    concurrentImages: 15,
-    outDir: 'dist',
-          webpAssets: [],
+    concurrentImages: 30,
+    outDir: "dist",
+    webpAssets: [],
   };
 }
 

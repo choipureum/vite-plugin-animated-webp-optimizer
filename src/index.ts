@@ -134,7 +134,7 @@ export async function processBundleFiles(options: any) {
           `[${PLUGIN_NAME}] No bundle assets found, scanning all directories...`
         );
       }
-      
+
       await processor.processDirectory(projectRoot, distDir);
     }
 
