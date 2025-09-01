@@ -72,7 +72,8 @@ function findWebpAssets(bundle: any, outDir: string): WebPAsset[] {
         if (typeof asset.source === "string") {
           // "assets/filename.webp" 형태를 "build/assets/filename.webp"로 변환
           if (asset.source.startsWith("assets/")) {
-            sourcePath = path.resolve(process.cwd(), outDir, asset.source);
+            const fileName = path.basename(asset.source);
+            sourcePath = path.resolve(process.cwd(), outDir, "assets", fileName);
           } else if (asset.source.startsWith("./")) {
             sourcePath = path.resolve(process.cwd(), asset.source);
           } else {
@@ -83,7 +84,12 @@ function findWebpAssets(bundle: any, outDir: string): WebPAsset[] {
           sourcePath = path.resolve(process.cwd(), outDir, "assets", fileName);
         }
       } else if (asset.fileName) {
-        sourcePath = path.resolve(process.cwd(), outDir, "assets", asset.fileName);
+        sourcePath = path.resolve(
+          process.cwd(),
+          outDir,
+          "assets",
+          asset.fileName
+        );
       } else {
         // 기본적으로 build/assets 폴더에서 파일 검색
         sourcePath = path.resolve(process.cwd(), outDir, "assets", fileName);
