@@ -109,27 +109,27 @@ export interface WebPAsset {
    * Original file path (source)
    */
   sourcePath: string;
-  
+
   /**
    * Built file name with hash (e.g., "image-abc123.webp")
    */
   fileName: string;
-  
+
   /**
    * Full output path in build directory
    */
   outputPath: string;
-  
+
   /**
    * Temporary directory for optimization (to avoid same file input/output error)
    */
   tempDir: string;
-  
+
   /**
    * File size in bytes
    */
   size: number;
-  
+
   /**
    * Whether the file is animated
    */

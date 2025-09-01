@@ -102,7 +102,8 @@ function findWebpAssets(bundle: any, outDir: string): WebPAsset[] {
 
       // outputPath를 sourcePath와 다른 경로로 설정하여 "same file for input and output" 에러 방지
       // 임시 폴더에 최적화된 파일을 생성한 후 원본 파일을 교체
-      const tempDir = path.join(outDir, ".temp_webp_optimization");
+      // assets 폴더 구조를 유지하여 경로 일관성 보장
+      const tempDir = path.join(outDir, ".temp_webp_optimization", "assets");
       const outputPath = path.join(tempDir, fileName);
 
       webpAssets.push({
