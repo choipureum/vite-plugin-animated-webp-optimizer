@@ -194,7 +194,7 @@ describe('Validators', () => {
       expect(defaults.optimizeAnimation).toBe(true);
       expect(defaults.maxWidth).toBe(0);
       expect(defaults.maxHeight).toBe(0);
-      expect(defaults.concurrentImages).toBe(5);
+      expect(defaults.concurrentImages).toBe(15);
     });
 
     it('should return immutable defaults', () => {

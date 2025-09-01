@@ -65,7 +65,7 @@ describe("Type Definitions", () => {
         optimizeAnimation: true,
         maxWidth: 1920,
         maxHeight: 1080,
-        concurrentImages: 5,
+        concurrentImages: 15,
         outDir: 'dist',
       };
 
@@ -79,7 +79,7 @@ describe("Type Definitions", () => {
       expect(options.optimizeAnimation).toBe(true);
       expect(options.maxWidth).toBe(1920);
       expect(options.maxHeight).toBe(1080);
-      expect(options.concurrentImages).toBe(5);
+              expect(options.concurrentImages).toBe(15);
     });
   });
 

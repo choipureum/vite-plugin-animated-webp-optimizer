@@ -69,7 +69,7 @@ export function getDefaultOptions(): Required<AnimatedWebpOptimizerOptions> {
     optimizeAnimation: true,
     maxWidth: 0,
     maxHeight: 0,
-    concurrentImages: 5,
+    concurrentImages: 15, // 성능 향상을 위해 증가 (5 → 15)
     outDir: 'dist',
   };
 }

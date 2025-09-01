@@ -22,7 +22,7 @@ describe("WebPProcessor", () => {
       optimizeAnimation: true,
       maxWidth: 0,
       maxHeight: 0,
-      concurrentImages: 5,
+      concurrentImages: 15,
       outDir: 'dist',
     };
 

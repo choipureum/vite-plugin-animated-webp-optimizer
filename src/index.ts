@@ -16,7 +16,7 @@ export default function animatedWebpOptimizer(
     name: PLUGIN_NAME,
     configResolved(config) {
       // Vite 설정에서 outDir 가져오기
-      mergedOptions.outDir = config.build.outDir || 'dist';
+      mergedOptions.outDir = config.build.outDir || "dist";
     },
     async closeBundle() {
       if (mergedOptions.verbose) {
@@ -52,7 +52,9 @@ export async function processBundleFiles(options: any) {
     await processor.processDirectory(projectRoot, distDir);
 
     if (options.verbose) {
-      console.log(`[${PLUGIN_NAME}] Build completed. Output directory: ${distDir}`);
+      console.log(
+        `[${PLUGIN_NAME}] Build completed. Output directory: ${distDir}`
+      );
     }
   } catch (error) {
     if (options.verbose) {

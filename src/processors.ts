@@ -5,6 +5,10 @@ import { ProcessOptions, WebPMetadata, OptimizationResult } from "./types";
 import { isValidWebP, formatBytes } from "./utils";
 
 export class WebPProcessor {
+  private webpFiles: string[] = [];
+  private processedCount = 0;
+  private totalCount = 0;
+
   constructor(private options: ProcessOptions) {}
 
   async processDirectory(dirPath: string, distDir: string): Promise<void> {
@@ -27,6 +31,41 @@ export class WebPProcessor {
       "out",
     ];
 
+    // 먼저 모든 WebP 파일을 수집
+    this.collectWebpFiles(dirPath);
+    this.totalCount = this.webpFiles.length;
+
+    if (this.totalCount === 0) {
+      if (this.options.verbose) {
+        console.log(`🔍 No WebP files found in directory: ${dirPath}`);
+      }
+      return;
+    }
+
+    if (this.options.verbose) {
+      console.log(`🚀 Found ${this.totalCount} WebP files. Starting optimization...`);
+    }
+
+    // 동시 처리로 최적화
+    await this.processFilesConcurrently(distDir);
+
+    if (this.options.verbose) {
+      console.log(`✅ Optimization completed! Processed ${this.processedCount}/${this.totalCount} files.`);
+    }
+  }
+
+  private collectWebpFiles(dirPath: string): void {
+    const excludeDirs = [
+      "node_modules",
+      ".git",
+      "dist",
+      "coverage",
+      ".vite",
+      ".next",
+      "build",
+      "out",
+    ];
+
     const files = fs.readdirSync(dirPath);
 
     for (const file of files) {
@@ -34,12 +73,27 @@ export class WebPProcessor {
       const stat = fs.statSync(filePath);
 
       if (stat.isDirectory()) {
-        // 제외할 디렉토리는 건너뛰기
         if (!excludeDirs.includes(file)) {
-          await this.processDirectory(filePath, distDir);
+          this.collectWebpFiles(filePath);
         }
       } else if (file.toLowerCase().endsWith(".webp")) {
-        await this.processWebpFile(filePath, distDir);
+        this.webpFiles.push(filePath);
+      }
+    }
+  }
+
+  private async processFilesConcurrently(distDir: string): Promise<void> {
+    const batchSize = this.options.concurrentImages;
+    
+    for (let i = 0; i < this.webpFiles.length; i += batchSize) {
+      const batch = this.webpFiles.slice(i, i + batchSize);
+      const promises = batch.map(filePath => this.processWebpFile(filePath, distDir));
+      
+      await Promise.all(promises);
+      
+      if (this.options.verbose) {
+        const progress = Math.round(((i + batchSize) / this.webpFiles.length) * 100);
+        console.log(`📊 Progress: ${Math.min(progress, 100)}% (${Math.min(i + batchSize, this.webpFiles.length)}/${this.webpFiles.length})`);
       }
     }
   }
@@ -51,16 +105,17 @@ export class WebPProcessor {
     try {
       const fileBuffer = fs.readFileSync(filePath);
       const fileSize = fileBuffer.length;
+      const fileName = path.basename(filePath);
 
       if (this.options.verbose) {
         console.log(
-          `🔍 Processing: ${path.basename(filePath)} (${formatBytes(fileSize)})`
+          `🔍 Processing: ${fileName} (${formatBytes(fileSize)})`
         );
       }
 
       if (!isValidWebP(fileBuffer)) {
         if (this.options.verbose) {
-          console.log(`❌ Invalid WebP file, skipping`);
+          console.log(`❌ Invalid WebP file, skipping: ${fileName}`);
         }
         return;
       }
@@ -70,7 +125,7 @@ export class WebPProcessor {
           console.log(
             `⏭️  File too large (${formatBytes(fileSize)} > ${formatBytes(
               this.options.maxFileSize
-            )}), skipping`
+            )}), skipping: ${fileName}`
           );
         }
         return;
@@ -84,20 +139,42 @@ export class WebPProcessor {
           console.log(
             `⏭️  File too small (${formatBytes(fileSize)} < ${formatBytes(
               this.options.skipIfSmaller
-            )}), skipping`
+            )}), skipping: ${fileName}`
           );
         }
         return;
       }
 
       const isAnimated = await this.detectAnimatedWebP(filePath);
-      const outputPath = path.join(distDir, path.basename(filePath));
+      const outputPath = path.join(distDir, fileName);
+
+      if (this.options.verbose) {
+        console.log(`⚡ Starting optimization: ${fileName} (${isAnimated ? 'Animated' : 'Static'})`);
+      }
+
+      const startTime = Date.now();
 
       if (isAnimated && this.options.optimizeAnimation) {
         await this.optimizeAnimatedWebP(filePath, outputPath);
       } else {
         await this.optimizeStaticWebP(filePath, outputPath);
       }
+
+      const endTime = Date.now();
+      const processingTime = endTime - startTime;
+
+      if (this.options.verbose) {
+        const optimizedSize = fs.existsSync(outputPath) ? fs.statSync(outputPath).size : 0;
+        const savings = fileSize - optimizedSize;
+        const savingsPercent = ((savings / fileSize) * 100).toFixed(1);
+        
+        console.log(`✅ Completed: ${fileName} in ${processingTime}ms`);
+        if (savings > 0) {
+          console.log(`   📉 Size: ${formatBytes(fileSize)} → ${formatBytes(optimizedSize)} (${savingsPercent}% saved)`);
+        }
+      }
+
+      this.processedCount++;
 
       if (this.options.maxFileSize > 0) {
         const optimizedSize = fs.statSync(outputPath).size;
