@@ -66,15 +66,25 @@ function findWebpAssets(bundle: any, outDir: string): WebPAsset[] {
 
     // WebP 파일인지 확인
     if (fileName.toLowerCase().endsWith(".webp")) {
-      // sourcePath를 안전하게 문자열로 변환
+      // sourcePath를 실제 파일의 절대 경로로 변환
       let sourcePath: string;
       if (asset.source) {
-        // Buffer인 경우 fileName을 사용, 문자열인 경우 그대로 사용
-        sourcePath = typeof asset.source === 'string' ? asset.source : fileName;
+        if (typeof asset.source === "string") {
+          // 상대 경로인 경우 (예: "assets/filename.webp") 프로젝트 루트 기준으로 절대 경로 생성
+          if (asset.source.startsWith("assets/") || asset.source.startsWith("./")) {
+            sourcePath = path.resolve(process.cwd(), asset.source);
+          } else {
+            sourcePath = asset.source;
+          }
+        } else {
+          // Buffer인 경우 fileName을 사용하고 프로젝트 루트에서 파일 검색
+          sourcePath = path.resolve(process.cwd(), "public", fileName);
+        }
       } else if (asset.fileName) {
-        sourcePath = asset.fileName;
+        sourcePath = path.resolve(process.cwd(), "public", asset.fileName);
       } else {
-        sourcePath = fileName;
+        // 기본적으로 public 폴더에서 파일 검색
+        sourcePath = path.resolve(process.cwd(), "public", fileName);
       }
 
       const outputPath = path.join(outDir, fileName);
