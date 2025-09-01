@@ -17,6 +17,7 @@ describe("WebPProcessor", () => {
       skipIfSmaller: 0,
       quality: 80,
       effort: 4,
+      lossless: false,
       animationQuality: 80,
       animationCompression: 4,
       optimizeAnimation: true,

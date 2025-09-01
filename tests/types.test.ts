@@ -60,6 +60,7 @@ describe("Type Definitions", () => {
         skipIfSmaller: 50000,
         quality: 85,
         effort: 6,
+        lossless: false,
         animationQuality: 90,
         animationCompression: 5,
         optimizeAnimation: true,
