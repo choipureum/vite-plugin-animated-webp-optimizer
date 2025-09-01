@@ -99,7 +99,9 @@ async function optimizeWebP(inputPath, outputPath) {
     // Skip if file is too large
     if (config.maxFileSize > 0 && stats.size > config.maxFileSize) {
       console.log(
-        `⏭️  Skipping large file: ${fileName} (${formatBytes(stats.size)})`
+        `⏭️  Skipping large file: ${fileName} (${formatBytes(stats.size)} = ${
+          stats.size
+        } bytes) - maxFileSize: ${config.maxFileSize} bytes`
       );
       return { skipped: true, originalSize: stats.size };
     }
