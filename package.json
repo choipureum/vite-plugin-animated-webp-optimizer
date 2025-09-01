@@ -23,7 +23,7 @@
     "sharp",
     "webpmux"
   ],
-  "author": "Your Name",
+  "author": "poo1994@ncsoft.com",
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^29.5.0",
