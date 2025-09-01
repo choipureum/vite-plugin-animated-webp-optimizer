@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-animated-webp-optimizer",
-  "version": "1.0.18",
+  "version": "1.0.20",
   "description": "Vite plugin for optimizing animated WebP files with Sharp and webpmux",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -12,7 +12,13 @@
     "test:coverage": "jest --coverage",
     "test:coverage:html": "jest --coverage --coverageReporters=html",
     "test:coverage:codecov": "jest --coverage --coverageReporters=lcov && codecov || echo 'Codecov upload failed, but tests passed'",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "webp:optimize": "node scripts/optimize-webp.js",
+    "webp:optimize:watch": "node scripts/optimize-webp.js --watch",
+    "webp:optimize:fast": "node scripts/optimize-webp.js --fast",
+    "webp:clean": "node scripts/clean-optimized.js",
+    "prebuild": "npm run webp:optimize:fast",
+    "build:fast": "npm run webp:clean && npm run build"
   },
   "keywords": [
     "vite",

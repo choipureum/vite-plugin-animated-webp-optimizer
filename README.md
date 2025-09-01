@@ -244,6 +244,64 @@ animatedWebpOptimizer({
 | `maxHeight`            | number  | 0       | Maximum height for resizing   |
 | `concurrentImages`     | number  | 5       | Concurrent processing limit   |
 
+## 🛠️ Manual WebP Optimization Scripts
+
+For better performance during development, you can use standalone scripts to optimize WebP files before building:
+
+### **Standalone Optimization Script**
+
+```bash
+# Basic optimization
+npm run webp:optimize
+
+# Fast optimization (lower quality, faster processing)
+npm run webp:optimize:fast
+
+# Watch mode for development
+npm run webp:optimize:watch
+
+# Custom settings
+npm run webp:optimize -- --quality=75 --effort=1 --source=src/assets --output=dist/assets
+```
+
+### **Cleanup Script**
+
+```bash
+# Clean optimized files
+npm run webp:clean
+
+# Dry run (see what would be deleted)
+npm run webp:clean -- --dry-run
+```
+
+### **Build Integration**
+
+```bash
+# Build with automatic WebP optimization
+npm run build
+
+# Fast build (clean + build)
+npm run build:fast
+```
+
+### **Script Options**
+
+| Option | Description | Example |
+|--------|-------------|---------|
+| `--fast` | Enable fast mode (quality: 60, effort: 1) | `npm run webp:optimize -- --fast` |
+| `--watch` | Watch for file changes | `npm run webp:optimize -- --watch` |
+| `--quality=N` | Set quality (1-100) | `npm run webp:optimize -- --quality=85` |
+| `--effort=N` | Set effort (0-6) | `npm run webp:optimize -- --effort=3` |
+| `--source=DIR` | Source directory | `npm run webp:optimize -- --source=public/images` |
+| `--output=DIR` | Output directory | `npm run webp:optimize -- --output=dist/images` |
+
+### **Performance Benefits**
+
+- **Faster Development**: WebP optimization happens separately from Vite build
+- **Reduced Build Time**: No WebP processing during hot reload
+- **Flexible Control**: Choose when and how to optimize
+- **Batch Processing**: Process multiple files concurrently
+
 ## 🚀 Development
 
 ### Prerequisites
