@@ -35,7 +35,6 @@ export class WebPProcessor {
       );
     }
 
-    // 동시 처리로 최적화
     await this.processAssetsConcurrently(webpAssets, distDir);
 
     if (this.options.verbose) {
@@ -53,7 +52,6 @@ export class WebPProcessor {
       return;
     }
 
-    // 제외할 디렉토리 목록
     const excludeDirs = [
       "node_modules",
       ".git",
@@ -65,7 +63,6 @@ export class WebPProcessor {
       "out",
     ];
 
-    // 먼저 모든 WebP 파일을 수집
     this.collectWebpFiles(dirPath);
     this.totalCount = this.webpFiles.length;
 
@@ -82,7 +79,6 @@ export class WebPProcessor {
       );
     }
 
-    // 동시 처리로 최적화
     await this.processFilesConcurrently(distDir);
 
     if (this.options.verbose) {
@@ -185,7 +181,6 @@ export class WebPProcessor {
         console.log(`🔍 Processing: ${fileName} (${formatBytes(fileSize)})`);
       }
 
-      // 애니메이션 여부 확인
       const isAnimated =
         asset.isAnimated || (await this.detectAnimatedWebP(asset.sourcePath));
 
@@ -199,10 +194,8 @@ export class WebPProcessor {
 
       const startTime = Date.now();
 
-      // 임시 경로에 최적화된 파일을 생성
       const outputPath = asset.outputPath;
-      
-      // Sharp가 파일을 쓰기 전에 임시 디렉토리를 미리 생성
+
       const tempDir = path.dirname(outputPath);
       if (!fs.existsSync(tempDir)) {
         fs.mkdirSync(tempDir, { recursive: true });
@@ -234,19 +227,15 @@ export class WebPProcessor {
         }
       }
 
-      // 임시 파일을 원본 파일로 교체
       const finalOutputPath = path.join(distDir, fileName);
       if (fs.existsSync(outputPath)) {
-        // 임시 디렉토리가 존재하지 않으면 생성
         const tempDir = path.dirname(outputPath);
         if (!fs.existsSync(tempDir)) {
           fs.mkdirSync(tempDir, { recursive: true });
         }
 
-        // 최적화된 파일을 최종 위치로 이동
         fs.copyFileSync(outputPath, finalOutputPath);
 
-        // 임시 파일 삭제
         fs.unlinkSync(outputPath);
       }
 

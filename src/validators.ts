@@ -69,9 +69,9 @@ export function getDefaultOptions(): Required<AnimatedWebpOptimizerOptions> {
     optimizeAnimation: true,
     maxWidth: 0,
     maxHeight: 0,
-    concurrentImages: 15, // 성능 향상을 위해 증가 (5 → 15)
+    concurrentImages: 15,
     outDir: 'dist',
-    webpAssets: [], // 빈 배열로 초기화
+          webpAssets: [],
   };
 }
 

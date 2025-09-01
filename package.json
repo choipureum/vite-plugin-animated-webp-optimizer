@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-animated-webp-optimizer",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "Vite plugin for optimizing animated WebP files with Sharp and webpmux",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -37,7 +37,6 @@
     "vite": "^4.0.0"
   },
   "dependencies": {
-    "execa": "^7.0.0",
     "sharp": "^0.32.0"
   },
   "peerDependencies": {
