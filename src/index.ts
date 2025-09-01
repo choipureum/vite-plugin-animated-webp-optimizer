@@ -70,9 +70,11 @@ function findWebpAssets(bundle: any, outDir: string): WebPAsset[] {
       let sourcePath: string;
       if (asset.source) {
         if (typeof asset.source === "string") {
-          // "assets/filename.webp" 형태를 "build/assets/filename.webp"로 변환
+          // rollupOptions의 assetFileNames 설정을 고려하여 경로 처리
           if (asset.source.startsWith("assets/")) {
-            const fileName = path.basename(asset.source);
+            // "assets/filename.webp" 또는 "assets/assets/filename.webp" 형태 처리
+            const pathParts = asset.source.split("/");
+            const fileName = pathParts[pathParts.length - 1]; // 마지막 부분이 파일명
             sourcePath = path.resolve(process.cwd(), outDir, "assets", fileName);
           } else if (asset.source.startsWith("./")) {
             sourcePath = path.resolve(process.cwd(), asset.source);
