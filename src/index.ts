@@ -1,5 +1,6 @@
 import { Plugin } from "vite";
 import * as path from "path";
+import * as fs from "fs";
 import { AnimatedWebpOptimizerOptions, WebPAsset } from "./types";
 import { validateOptions, mergeOptions } from "./validators";
 import { WebPProcessor } from "./processors";
@@ -91,12 +92,23 @@ function findWebpAssets(bundle: any, outDir: string): WebPAsset[] {
       const tempDir = path.join(outDir, ".temp_webp_optimization", "assets");
       const outputPath = path.join(tempDir, fileName);
 
+      // asset.size가 0인 경우 실제 파일 크기를 확인
+      let size = asset.size || 0;
+      if (size === 0 && fs.existsSync(sourcePath)) {
+        try {
+          size = fs.statSync(sourcePath).size;
+        } catch (error) {
+          // 파일 접근 실패 시 0 유지
+          size = 0;
+        }
+      }
+
       webpAssets.push({
         sourcePath,
         fileName,
         outputPath,
         tempDir,
-        size: asset.size || 0,
+        size,
         isAnimated: false,
       });
     }

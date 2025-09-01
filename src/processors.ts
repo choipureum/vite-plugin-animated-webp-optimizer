@@ -176,13 +176,19 @@ export class WebPProcessor {
   ): Promise<void> {
     try {
       const fileName = asset.fileName;
-      const fileSize = asset.size;
+      // asset.size가 0인 경우 실제 파일 크기를 직접 확인
+      let fileSize = asset.size;
+      if (fileSize === 0 && fs.existsSync(asset.sourcePath)) {
+        fileSize = fs.statSync(asset.sourcePath).size;
+      }
 
       if (this.options.verbose) {
         console.log(`🔍 Processing: ${fileName} (${formatBytes(fileSize)})`);
       }
 
+      // 실제 파일 크기가 0이 아닌 경우에만 skipIfSmaller 체크
       if (
+        fileSize > 0 &&
         this.options.skipIfSmaller > 0 &&
         fileSize < this.options.skipIfSmaller
       ) {
@@ -277,7 +283,7 @@ export class WebPProcessor {
         fs.unlinkSync(outputPath);
       }
 
-              this.cache.set(cacheKey, {
+      this.cache.set(cacheKey, {
         size: stats.size,
         mtime: stats.mtime.getTime(),
       });
