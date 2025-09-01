@@ -77,6 +77,7 @@ export interface ProcessOptions {
   optimizeAnimation: boolean;
   maxWidth: number;
   maxHeight: number;
+  concurrentImages: number;
 }
 
 export interface WebPMetadata {

@@ -1,13 +1,13 @@
-import { 
-  AnimatedWebpOptimizerOptions, 
-  ProcessOptions, 
-  WebPMetadata, 
-  OptimizationResult 
-} from '../src/types';
+import {
+  AnimatedWebpOptimizerOptions,
+  ProcessOptions,
+  WebPMetadata,
+  OptimizationResult,
+} from "../src/types";
 
-describe('Type Definitions', () => {
-  describe('AnimatedWebpOptimizerOptions', () => {
-    it('should allow all valid options', () => {
+describe("Type Definitions", () => {
+  describe("AnimatedWebpOptimizerOptions", () => {
+    it("should allow all valid options", () => {
       const options: AnimatedWebpOptimizerOptions = {
         quality: 85,
         effort: 4,
@@ -35,7 +35,7 @@ describe('Type Definitions', () => {
       expect(options.concurrentImages).toBe(10);
     });
 
-    it('should allow partial options', () => {
+    it("should allow partial options", () => {
       const options: AnimatedWebpOptimizerOptions = {
         quality: 90,
         verbose: true,
@@ -46,42 +46,44 @@ describe('Type Definitions', () => {
       expect(options.effort).toBeUndefined();
     });
 
-    it('should allow empty options', () => {
+    it("should allow empty options", () => {
       const options: AnimatedWebpOptimizerOptions = {};
       expect(Object.keys(options)).toHaveLength(0);
     });
   });
 
-  describe('ProcessOptions', () => {
-    it('should have all required properties', () => {
+  describe("ProcessOptions", () => {
+    it("should have correct ProcessOptions structure", () => {
       const options: ProcessOptions = {
         verbose: true,
         maxFileSize: 1000000,
         skipIfSmaller: 50000,
         quality: 85,
-        effort: 4,
+        effort: 6,
         animationQuality: 90,
         animationCompression: 5,
         optimizeAnimation: true,
         maxWidth: 1920,
         maxHeight: 1080,
+        concurrentImages: 5,
       };
 
       expect(options.verbose).toBe(true);
       expect(options.maxFileSize).toBe(1000000);
       expect(options.skipIfSmaller).toBe(50000);
       expect(options.quality).toBe(85);
-      expect(options.effort).toBe(4);
+      expect(options.effort).toBe(6);
       expect(options.animationQuality).toBe(90);
       expect(options.animationCompression).toBe(5);
       expect(options.optimizeAnimation).toBe(true);
       expect(options.maxWidth).toBe(1920);
       expect(options.maxHeight).toBe(1080);
+      expect(options.concurrentImages).toBe(5);
     });
   });
 
-  describe('WebPMetadata', () => {
-    it('should allow all metadata properties', () => {
+  describe("WebPMetadata", () => {
+    it("should allow all metadata properties", () => {
       const metadata: WebPMetadata = {
         pages: 96,
         loop: 0,
@@ -101,7 +103,7 @@ describe('Type Definitions', () => {
       expect(metadata.pageHeight).toBe(240);
     });
 
-    it('should allow partial metadata', () => {
+    it("should allow partial metadata", () => {
       const metadata: WebPMetadata = {
         width: 100,
         height: 100,
@@ -113,8 +115,8 @@ describe('Type Definitions', () => {
     });
   });
 
-  describe('OptimizationResult', () => {
-    it('should have all required properties for success', () => {
+  describe("OptimizationResult", () => {
+    it("should have all required properties for success", () => {
       const result: OptimizationResult = {
         success: true,
         originalSize: 1000000,
@@ -131,18 +133,18 @@ describe('Type Definitions', () => {
       expect(result.error).toBeUndefined();
     });
 
-    it('should allow error property for failed optimization', () => {
+    it("should allow error property for failed optimization", () => {
       const result: OptimizationResult = {
         success: false,
         originalSize: 1000000,
         optimizedSize: 1000000,
         savings: 0,
         savingsPercent: 0,
-        error: 'Optimization failed',
+        error: "Optimization failed",
       };
 
       expect(result.success).toBe(false);
-      expect(result.error).toBe('Optimization failed');
+      expect(result.error).toBe("Optimization failed");
     });
   });
 });

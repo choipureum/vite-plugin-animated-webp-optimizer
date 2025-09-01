@@ -1,8 +1,8 @@
 import * as fs from "fs";
 import * as path from "path";
 import sharp from "sharp";
-import { ProcessOptions, WebPMetadata, OptimizationResult } from './types';
-import { isValidWebP, formatBytes } from './utils';
+import { ProcessOptions, WebPMetadata, OptimizationResult } from "./types";
+import { isValidWebP, formatBytes } from "./utils";
 
 export class WebPProcessor {
   constructor(private options: ProcessOptions) {}
@@ -16,7 +16,7 @@ export class WebPProcessor {
     }
 
     const files = fs.readdirSync(dirPath);
-    
+
     for (const file of files) {
       const filePath = path.join(dirPath, file);
       const stat = fs.statSync(filePath);
@@ -29,7 +29,10 @@ export class WebPProcessor {
     }
   }
 
-  private async processWebpFile(filePath: string, distDir: string): Promise<void> {
+  private async processWebpFile(
+    filePath: string,
+    distDir: string
+  ): Promise<void> {
     try {
       const fileBuffer = fs.readFileSync(filePath);
       const fileSize = fileBuffer.length;
@@ -47,9 +50,27 @@ export class WebPProcessor {
         return;
       }
 
-      if (this.options.skipIfSmaller > 0 && fileSize < this.options.skipIfSmaller) {
+      if (this.options.maxFileSize > 0 && fileSize > this.options.maxFileSize) {
         if (this.options.verbose) {
-          console.log(`⏭️  File too small, skipping`);
+          console.log(
+            `⏭️  File too large (${formatBytes(fileSize)} > ${formatBytes(
+              this.options.maxFileSize
+            )}), skipping`
+          );
+        }
+        return;
+      }
+
+      if (
+        this.options.skipIfSmaller > 0 &&
+        fileSize < this.options.skipIfSmaller
+      ) {
+        if (this.options.verbose) {
+          console.log(
+            `⏭️  File too small (${formatBytes(fileSize)} < ${formatBytes(
+              this.options.skipIfSmaller
+            )}), skipping`
+          );
         }
         return;
       }
@@ -63,7 +84,6 @@ export class WebPProcessor {
         await this.optimizeStaticWebP(filePath, outputPath);
       }
 
-      // Check if file size limit is exceeded
       if (this.options.maxFileSize > 0) {
         const optimizedSize = fs.statSync(outputPath).size;
         if (optimizedSize > this.options.maxFileSize) {
@@ -80,7 +100,6 @@ export class WebPProcessor {
       if (this.options.verbose) {
         console.error(`❌ Error processing file:`, error);
       }
-      // Fallback to copying
       this.copyFileToDist(filePath, distDir);
     }
   }
@@ -95,7 +114,10 @@ export class WebPProcessor {
     }
   }
 
-  private async optimizeAnimatedWebP(inputPath: string, outputPath: string): Promise<OptimizationResult> {
+  private async optimizeAnimatedWebP(
+    inputPath: string,
+    outputPath: string
+  ): Promise<OptimizationResult> {
     try {
       if (this.options.verbose) {
         console.log(`🎬 Optimizing animated WebP: ${path.basename(inputPath)}`);
@@ -116,7 +138,10 @@ export class WebPProcessor {
         effort: this.options.animationCompression,
         smartSubsample: true,
         lossless: false,
-        loop: typeof metadata.loop === "number" && metadata.loop >= 0 ? metadata.loop : 0,
+        loop:
+          typeof metadata.loop === "number" && metadata.loop >= 0
+            ? metadata.loop
+            : 0,
         delay: metadata.delay || undefined,
         force: true,
       };
@@ -132,7 +157,10 @@ export class WebPProcessor {
     }
   }
 
-  private async optimizeStaticWebP(inputPath: string, outputPath: string): Promise<OptimizationResult> {
+  private async optimizeStaticWebP(
+    inputPath: string,
+    outputPath: string
+  ): Promise<OptimizationResult> {
     try {
       if (this.options.verbose) {
         console.log(`🖼️  Optimizing static WebP: ${path.basename(inputPath)}`);
@@ -168,13 +196,21 @@ export class WebPProcessor {
     };
   }
 
-  private resizeImage(sharpImage: sharp.Sharp, metadata: WebPMetadata): sharp.Sharp {
-    const targetWidth = this.options.maxWidth > 0 ? this.options.maxWidth : metadata.width || 0;
-    const targetHeight = this.options.maxHeight > 0 ? this.options.maxHeight : metadata.height || 0;
+  private resizeImage(
+    sharpImage: sharp.Sharp,
+    metadata: WebPMetadata
+  ): sharp.Sharp {
+    const targetWidth =
+      this.options.maxWidth > 0 ? this.options.maxWidth : metadata.width || 0;
+    const targetHeight =
+      this.options.maxHeight > 0
+        ? this.options.maxHeight
+        : metadata.height || 0;
 
-    const adjustedHeight = metadata.pages && metadata.pages > 1 
-      ? targetHeight * metadata.pages 
-      : targetHeight;
+    const adjustedHeight =
+      metadata.pages && metadata.pages > 1
+        ? targetHeight * metadata.pages
+        : targetHeight;
 
     return sharpImage.resize({
       width: targetWidth,
@@ -183,11 +219,14 @@ export class WebPProcessor {
     });
   }
 
-  private calculateOptimizationResult(inputPath: string, outputPath: string): OptimizationResult {
+  private calculateOptimizationResult(
+    inputPath: string,
+    outputPath: string
+  ): OptimizationResult {
     const originalSize = fs.statSync(inputPath).size;
     const optimizedSize = fs.statSync(outputPath).size;
     const savings = originalSize - optimizedSize;
-    const savingsPercent = ((savings / originalSize) * 100);
+    const savingsPercent = (savings / originalSize) * 100;
 
     if (this.options.verbose) {
       console.log(
@@ -210,7 +249,7 @@ export class WebPProcessor {
     try {
       const outputPath = path.join(distDir, path.basename(inputPath));
       fs.copyFileSync(inputPath, outputPath);
-      
+
       if (this.options.verbose) {
         console.log(`📋 Copied ${path.basename(inputPath)} to dist`);
       }

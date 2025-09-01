@@ -1,12 +1,12 @@
-import { WebPProcessor } from '../src/processors';
-import { ProcessOptions } from '../src/types';
+import { WebPProcessor } from "../src/processors";
+import { ProcessOptions } from "../src/types";
 
 // Mock fs and path modules
-jest.mock('fs');
-jest.mock('path');
-jest.mock('sharp');
+jest.mock("fs");
+jest.mock("path");
+jest.mock("sharp");
 
-describe('WebPProcessor', () => {
+describe("WebPProcessor", () => {
   let processor: WebPProcessor;
   let mockOptions: ProcessOptions;
 
@@ -22,35 +22,36 @@ describe('WebPProcessor', () => {
       optimizeAnimation: true,
       maxWidth: 0,
       maxHeight: 0,
+      concurrentImages: 5,
     };
 
     processor = new WebPProcessor(mockOptions);
   });
 
-  describe('constructor', () => {
-    it('should create processor with options', () => {
+  describe("constructor", () => {
+    it("should create processor with options", () => {
       expect(processor).toBeInstanceOf(WebPProcessor);
     });
   });
 
-  describe('processDirectory', () => {
-    it('should handle non-existent directory', async () => {
-      const mockFs = require('fs');
+  describe("processDirectory", () => {
+    it("should handle non-existent directory", async () => {
+      const mockFs = require("fs");
       mockFs.existsSync.mockReturnValue(false);
 
-      await processor.processDirectory('nonexistent', 'dist');
+      await processor.processDirectory("nonexistent", "dist");
 
-      expect(mockFs.existsSync).toHaveBeenCalledWith('nonexistent');
+      expect(mockFs.existsSync).toHaveBeenCalledWith("nonexistent");
     });
 
-    it('should process empty directory', async () => {
-      const mockFs = require('fs');
+    it("should process empty directory", async () => {
+      const mockFs = require("fs");
       mockFs.existsSync.mockReturnValue(true);
       mockFs.readdirSync.mockReturnValue([]);
 
-      await processor.processDirectory('empty', 'dist');
+      await processor.processDirectory("empty", "dist");
 
-      expect(mockFs.readdirSync).toHaveBeenCalledWith('empty');
+      expect(mockFs.readdirSync).toHaveBeenCalledWith("empty");
     });
   });
 });

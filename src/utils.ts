@@ -5,7 +5,11 @@ import sharp from "sharp";
 /**
  * WebP 파일의 유효성을 검사합니다.
  */
-export function isValidWebP(buffer: Buffer): boolean {
+export function isValidWebP(buffer: Buffer | null | undefined): boolean {
+  if (!buffer || !Buffer.isBuffer(buffer)) {
+    return false;
+  }
+
   return (
     buffer.length >= 12 &&
     buffer.toString("ascii", 0, 4) === "RIFF" &&
@@ -18,9 +22,17 @@ export function isValidWebP(buffer: Buffer): boolean {
  */
 export function formatBytes(bytes: number): string {
   if (bytes === 0) return "0 Bytes";
+  if (bytes < 0) return `-${formatBytes(Math.abs(bytes))}`;
+  if (!isFinite(bytes)) return `${bytes} Bytes`;
+
   const k = 1024;
-  const sizes = ["Bytes", "KB", "MB", "GB"];
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  if (i >= sizes.length) {
+    return `${bytes} Bytes`;
+  }
+
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
 }
 
@@ -304,7 +316,6 @@ async function processWebpFile(
     if (verbose) {
       console.error(`❌ Error processing file:`, error);
     }
-    // Fallback to copying
     copyFileToDist(filePath, distDir);
   }
 }
