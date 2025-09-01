@@ -66,7 +66,17 @@ function findWebpAssets(bundle: any, outDir: string): WebPAsset[] {
 
     // WebP 파일인지 확인
     if (fileName.toLowerCase().endsWith(".webp")) {
-      const sourcePath = asset.source || asset.fileName || fileName;
+      // sourcePath를 안전하게 문자열로 변환
+      let sourcePath: string;
+      if (asset.source) {
+        // Buffer인 경우 fileName을 사용, 문자열인 경우 그대로 사용
+        sourcePath = typeof asset.source === 'string' ? asset.source : fileName;
+      } else if (asset.fileName) {
+        sourcePath = asset.fileName;
+      } else {
+        sourcePath = fileName;
+      }
+
       const outputPath = path.join(outDir, fileName);
 
       webpAssets.push({
