@@ -246,7 +246,7 @@ animatedWebpOptimizer({
 
 ## 🛠️ Manual WebP Optimization Scripts
 
-For better performance during development, you can use standalone scripts to optimize WebP files before building:
+For better performance during development, you can use standalone scripts to optimize WebP files before building. These scripts work both locally and when installed via npm.
 
 ### **Standalone Optimization Script**
 
@@ -284,16 +284,34 @@ npm run build
 npm run build:fast
 ```
 
+### **Global Usage (After npm install)**
+
+Once installed, you can use the scripts globally:
+
+```bash
+# Install the package
+npm install vite-plugin-animated-webp-optimizer
+
+# Use global commands
+webp-optimize --fast
+webp-optimize --watch
+webp-clean
+
+# Or use npx
+npx webp-optimize --quality=85 --effort=3
+npx webp-clean --dry-run
+```
+
 ### **Script Options**
 
-| Option | Description | Example |
-|--------|-------------|---------|
-| `--fast` | Enable fast mode (quality: 60, effort: 1) | `npm run webp:optimize -- --fast` |
-| `--watch` | Watch for file changes | `npm run webp:optimize -- --watch` |
-| `--quality=N` | Set quality (1-100) | `npm run webp:optimize -- --quality=85` |
-| `--effort=N` | Set effort (0-6) | `npm run webp:optimize -- --effort=3` |
-| `--source=DIR` | Source directory | `npm run webp:optimize -- --source=public/images` |
-| `--output=DIR` | Output directory | `npm run webp:optimize -- --output=dist/images` |
+| Option         | Description                               | Example                                           |
+| -------------- | ----------------------------------------- | ------------------------------------------------- |
+| `--fast`       | Enable fast mode (quality: 60, effort: 1) | `npm run webp:optimize -- --fast`                 |
+| `--watch`      | Watch for file changes                    | `npm run webp:optimize -- --watch`                |
+| `--quality=N`  | Set quality (1-100)                       | `npm run webp:optimize -- --quality=85`           |
+| `--effort=N`   | Set effort (0-6)                          | `npm run webp:optimize -- --effort=3`             |
+| `--source=DIR` | Source directory                          | `npm run webp:optimize -- --source=public/images` |
+| `--output=DIR` | Output directory                          | `npm run webp:optimize -- --output=dist/images`   |
 
 ### **Performance Benefits**
 
