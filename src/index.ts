@@ -70,14 +70,17 @@ function findWebpAssets(bundle: any, outDir: string): WebPAsset[] {
       let sourcePath: string;
       if (asset.source) {
         if (typeof asset.source === "string") {
-          // 상대 경로인 경우 (예: "assets/filename.webp") 프로젝트 루트 기준으로 절대 경로 생성
-          if (asset.source.startsWith("assets/") || asset.source.startsWith("./")) {
+          // "assets/filename.webp" 형태를 "public/filename.webp"로 변환
+          if (asset.source.startsWith("assets/")) {
+            const fileName = path.basename(asset.source);
+            sourcePath = path.resolve(process.cwd(), "public", fileName);
+          } else if (asset.source.startsWith("./")) {
             sourcePath = path.resolve(process.cwd(), asset.source);
           } else {
             sourcePath = asset.source;
           }
         } else {
-          // Buffer인 경우 fileName을 사용하고 프로젝트 루트에서 파일 검색
+          // Buffer인 경우 fileName을 사용하고 public 폴더에서 파일 검색
           sourcePath = path.resolve(process.cwd(), "public", fileName);
         }
       } else if (asset.fileName) {
