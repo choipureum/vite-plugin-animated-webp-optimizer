@@ -1,6 +1,6 @@
 import { Plugin } from "vite";
 import * as path from "path";
-import { AnimatedWebpOptimizerOptions } from "./types";
+import { AnimatedWebpOptimizerOptions, WebPAsset } from "./types";
 import { validateOptions, mergeOptions } from "./validators";
 import { WebPProcessor } from "./processors";
 
@@ -11,16 +11,40 @@ export default function animatedWebpOptimizer(
 ): Plugin {
   validateOptions(options);
   const mergedOptions = mergeOptions(options);
+  let buildOutputDir = "dist";
 
   return {
     name: PLUGIN_NAME,
     configResolved(config) {
       // Vite 설정에서 outDir 가져오기
-      mergedOptions.outDir = config.build.outDir || "dist";
+      buildOutputDir = config.build.outDir || "dist";
+      mergedOptions.outDir = buildOutputDir;
+    },
+    async generateBundle(options, bundle) {
+      if (mergedOptions.verbose) {
+        console.log(`[${PLUGIN_NAME}] Analyzing bundle for WebP files...`);
+      }
+
+      // bundle에서 WebP 파일들을 찾아서 해시 매핑 생성
+      const webpAssets = findWebpAssets(bundle, buildOutputDir);
+      
+      if (webpAssets.length === 0) {
+        if (mergedOptions.verbose) {
+          console.log(`[${PLUGIN_NAME}] No WebP files found in bundle.`);
+        }
+        return;
+      }
+
+      if (mergedOptions.verbose) {
+        console.log(`[${PLUGIN_NAME}] Found ${webpAssets.length} WebP files in bundle.`);
+      }
+
+      // 해시 매핑 정보를 옵션에 저장
+      mergedOptions.webpAssets = webpAssets;
     },
     async closeBundle() {
       if (mergedOptions.verbose) {
-        console.log(`[${PLUGIN_NAME}] Processing bundle files...`);
+        console.log(`[${PLUGIN_NAME}] Starting WebP optimization...`);
       }
 
       await processBundleFiles(mergedOptions);
@@ -30,6 +54,30 @@ export default function animatedWebpOptimizer(
       }
     },
   };
+}
+
+function findWebpAssets(bundle: any, outDir: string): WebPAsset[] {
+  const webpAssets: WebPAsset[] = [];
+  
+  for (const fileName in bundle) {
+    const asset = bundle[fileName];
+    
+    // WebP 파일인지 확인
+    if (fileName.toLowerCase().endsWith('.webp')) {
+      const sourcePath = asset.source || asset.fileName || fileName;
+      const outputPath = path.join(outDir, fileName);
+      
+      webpAssets.push({
+        sourcePath,
+        fileName,
+        outputPath,
+        size: asset.size || 0,
+        isAnimated: false // 나중에 detectAnimatedWebP로 확인
+      });
+    }
+  }
+  
+  return webpAssets;
 }
 
 export async function processBundleFiles(options: any) {
@@ -48,8 +96,19 @@ export async function processBundleFiles(options: any) {
   try {
     const processor = new WebPProcessor(options);
 
-    // 프로젝트 루트부터 모든 폴더를 재귀적으로 검색
-    await processor.processDirectory(projectRoot, distDir);
+    // bundle에서 찾은 WebP 파일들이 있으면 그것들을 사용, 없으면 전체 스캔
+    if (options.webpAssets && options.webpAssets.length > 0) {
+      if (options.verbose) {
+        console.log(`[${PLUGIN_NAME}] Processing ${options.webpAssets.length} WebP files from bundle...`);
+      }
+      await processor.processBundleAssets(options.webpAssets, distDir);
+    } else {
+      if (options.verbose) {
+        console.log(`[${PLUGIN_NAME}] No bundle assets found, scanning all directories...`);
+      }
+      // 프로젝트 루트부터 모든 폴더를 재귀적으로 검색
+      await processor.processDirectory(projectRoot, distDir);
+    }
 
     if (options.verbose) {
       console.log(

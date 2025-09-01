@@ -71,6 +71,7 @@ export function getDefaultOptions(): Required<AnimatedWebpOptimizerOptions> {
     maxHeight: 0,
     concurrentImages: 15, // 성능 향상을 위해 증가 (5 → 15)
     outDir: 'dist',
+    webpAssets: [], // 빈 배열로 초기화
   };
 }
 

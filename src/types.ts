@@ -61,7 +61,7 @@ export interface AnimatedWebpOptimizerOptions {
 
   /**
    * Number of concurrent images to process
-   * @default 5
+   * @default 15
    */
   concurrentImages?: number;
 
@@ -70,6 +70,12 @@ export interface AnimatedWebpOptimizerOptions {
    * @default 'dist'
    */
   outDir?: string;
+
+  /**
+   * WebP assets found in bundle with hash mapping
+   * @internal
+   */
+  webpAssets?: WebPAsset[];
 }
 
 export interface ProcessOptions {
@@ -85,6 +91,7 @@ export interface ProcessOptions {
   maxHeight: number;
   concurrentImages: number;
   outDir: string;
+  webpAssets?: WebPAsset[];
 }
 
 export interface WebPMetadata {
@@ -95,6 +102,33 @@ export interface WebPMetadata {
   height?: number;
   size?: number;
   pageHeight?: number;
+}
+
+export interface WebPAsset {
+  /**
+   * Original file path (source)
+   */
+  sourcePath: string;
+  
+  /**
+   * Built file name with hash (e.g., "image-abc123.webp")
+   */
+  fileName: string;
+  
+  /**
+   * Full output path in build directory
+   */
+  outputPath: string;
+  
+  /**
+   * File size in bytes
+   */
+  size: number;
+  
+  /**
+   * Whether the file is animated
+   */
+  isAnimated?: boolean;
 }
 
 export interface OptimizationResult {

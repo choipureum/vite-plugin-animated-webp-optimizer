@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import sharp from "sharp";
-import { ProcessOptions, WebPMetadata, OptimizationResult } from "./types";
+import { ProcessOptions, WebPMetadata, OptimizationResult, WebPAsset } from "./types";
 import { isValidWebP, formatBytes } from "./utils";
 
 export class WebPProcessor {
@@ -10,6 +10,28 @@ export class WebPProcessor {
   private totalCount = 0;
 
   constructor(private options: ProcessOptions) {}
+
+  async processBundleAssets(webpAssets: WebPAsset[], distDir: string): Promise<void> {
+    if (webpAssets.length === 0) {
+      if (this.options.verbose) {
+        console.log(`No WebP assets to process.`);
+      }
+      return;
+    }
+
+    this.totalCount = webpAssets.length;
+
+    if (this.options.verbose) {
+      console.log(`🚀 Processing ${this.totalCount} WebP assets from bundle...`);
+    }
+
+    // 동시 처리로 최적화
+    await this.processAssetsConcurrently(webpAssets, distDir);
+
+    if (this.options.verbose) {
+      console.log(`✅ Bundle optimization completed! Processed ${this.processedCount}/${this.totalCount} files.`);
+    }
+  }
 
   async processDirectory(dirPath: string, distDir: string): Promise<void> {
     if (!fs.existsSync(dirPath)) {
@@ -95,6 +117,74 @@ export class WebPProcessor {
         const progress = Math.round(((i + batchSize) / this.webpFiles.length) * 100);
         console.log(`📊 Progress: ${Math.min(progress, 100)}% (${Math.min(i + batchSize, this.webpFiles.length)}/${this.webpFiles.length})`);
       }
+    }
+  }
+
+  private async processAssetsConcurrently(webpAssets: WebPAsset[], distDir: string): Promise<void> {
+    const batchSize = this.options.concurrentImages;
+    
+    for (let i = 0; i < webpAssets.length; i += batchSize) {
+      const batch = webpAssets.slice(i, i + batchSize);
+      const promises = batch.map(asset => this.processWebpAsset(asset, distDir));
+      
+      await Promise.all(promises);
+      
+      if (this.options.verbose) {
+        const progress = Math.round(((i + batchSize) / webpAssets.length) * 100);
+        console.log(`📊 Progress: ${Math.min(progress, 100)}% (${Math.min(i + batchSize, webpAssets.length)}/${webpAssets.length})`);
+      }
+    }
+  }
+
+  private async processWebpAsset(asset: WebPAsset, distDir: string): Promise<void> {
+    try {
+      const fileName = asset.fileName;
+      const fileSize = asset.size;
+
+      if (this.options.verbose) {
+        console.log(
+          `🔍 Processing: ${fileName} (${formatBytes(fileSize)})`
+        );
+      }
+
+      // 애니메이션 여부 확인
+      const isAnimated = asset.isAnimated || await this.detectAnimatedWebP(asset.sourcePath);
+      
+      if (this.options.verbose) {
+        console.log(`⚡ Starting optimization: ${fileName} (${isAnimated ? 'Animated' : 'Static'})`);
+      }
+
+      const startTime = Date.now();
+
+      // 해시가 포함된 파일명으로 출력
+      const outputPath = path.join(distDir, fileName);
+
+      if (isAnimated && this.options.optimizeAnimation) {
+        await this.optimizeAnimatedWebP(asset.sourcePath, outputPath);
+      } else {
+        await this.optimizeStaticWebP(asset.sourcePath, outputPath);
+      }
+
+      const endTime = Date.now();
+      const processingTime = endTime - startTime;
+
+      if (this.options.verbose) {
+        const optimizedSize = fs.existsSync(outputPath) ? fs.statSync(outputPath).size : 0;
+        const savings = fileSize - optimizedSize;
+        const savingsPercent = ((savings / fileSize) * 100).toFixed(1);
+        
+        console.log(`✅ Completed: ${fileName} in ${processingTime}ms`);
+        if (savings > 0) {
+          console.log(`   📉 Size: ${formatBytes(fileSize)} → ${formatBytes(optimizedSize)} (${savingsPercent}% saved)`);
+        }
+      }
+
+      this.processedCount++;
+    } catch (error) {
+      if (this.options.verbose) {
+        console.error(`❌ Error processing asset:`, error);
+      }
+      this.processedCount++;
     }
   }
 
