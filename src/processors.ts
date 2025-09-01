@@ -156,8 +156,8 @@ export class WebPProcessor {
 
       const startTime = Date.now();
 
-      // 해시가 포함된 파일명으로 출력
-      const outputPath = path.join(distDir, fileName);
+      // 임시 경로에 최적화된 파일을 생성
+      const outputPath = asset.outputPath;
 
       if (isAnimated && this.options.optimizeAnimation) {
         await this.optimizeAnimatedWebP(asset.sourcePath, outputPath);
@@ -177,6 +177,22 @@ export class WebPProcessor {
         if (savings > 0) {
           console.log(`   📉 Size: ${formatBytes(fileSize)} → ${formatBytes(optimizedSize)} (${savingsPercent}% saved)`);
         }
+      }
+
+      // 임시 파일을 원본 파일로 교체
+      const finalOutputPath = path.join(distDir, fileName);
+      if (fs.existsSync(outputPath)) {
+        // 임시 디렉토리가 존재하지 않으면 생성
+        const tempDir = path.dirname(outputPath);
+        if (!fs.existsSync(tempDir)) {
+          fs.mkdirSync(tempDir, { recursive: true });
+        }
+        
+        // 최적화된 파일을 최종 위치로 이동
+        fs.copyFileSync(outputPath, finalOutputPath);
+        
+        // 임시 파일 삭제
+        fs.unlinkSync(outputPath);
       }
 
       this.processedCount++;

@@ -121,6 +121,11 @@ export interface WebPAsset {
   outputPath: string;
   
   /**
+   * Temporary directory for optimization (to avoid same file input/output error)
+   */
+  tempDir: string;
+  
+  /**
    * File size in bytes
    */
   size: number;

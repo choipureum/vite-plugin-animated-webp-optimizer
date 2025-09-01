@@ -91,33 +91,25 @@ function findWebpAssets(bundle: any, outDir: string): WebPAsset[] {
           }
         } else {
           // Buffer인 경우 fileName을 사용하고 build 폴더에서 파일 검색
-          sourcePath = path.resolve(
-            process.cwd(),
-            outDir,
-            fileName
-          );
+          sourcePath = path.resolve(process.cwd(), outDir, fileName);
         }
       } else if (asset.fileName) {
-        sourcePath = path.resolve(
-          process.cwd(),
-          outDir,
-          asset.fileName
-        );
+        sourcePath = path.resolve(process.cwd(), outDir, asset.fileName);
       } else {
         // 기본적으로 build 폴더에서 파일 검색
-        sourcePath = path.resolve(
-          process.cwd(),
-          outDir,
-          fileName
-        );
+        sourcePath = path.resolve(process.cwd(), outDir, fileName);
       }
 
-      const outputPath = path.join(outDir, fileName);
+      // outputPath를 sourcePath와 다른 경로로 설정하여 "same file for input and output" 에러 방지
+      // 임시 폴더에 최적화된 파일을 생성한 후 원본 파일을 교체
+      const tempDir = path.join(outDir, ".temp_webp_optimization");
+      const outputPath = path.join(tempDir, fileName);
 
       webpAssets.push({
         sourcePath,
         fileName,
         outputPath,
+        tempDir,
         size: asset.size || 0,
         isAnimated: false, // 나중에 detectAnimatedWebP로 확인
       });
