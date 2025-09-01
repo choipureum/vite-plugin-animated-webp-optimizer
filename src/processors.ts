@@ -15,6 +15,18 @@ export class WebPProcessor {
       return;
     }
 
+    // 제외할 디렉토리 목록
+    const excludeDirs = [
+      "node_modules",
+      ".git",
+      "dist",
+      "coverage",
+      ".vite",
+      ".next",
+      "build",
+      "out",
+    ];
+
     const files = fs.readdirSync(dirPath);
 
     for (const file of files) {
@@ -22,7 +34,10 @@ export class WebPProcessor {
       const stat = fs.statSync(filePath);
 
       if (stat.isDirectory()) {
-        await this.processDirectory(filePath, distDir);
+        // 제외할 디렉토리는 건너뛰기
+        if (!excludeDirs.includes(file)) {
+          await this.processDirectory(filePath, distDir);
+        }
       } else if (file.toLowerCase().endsWith(".webp")) {
         await this.processWebpFile(filePath, distDir);
       }

@@ -29,13 +29,13 @@ export default function animatedWebpOptimizer(
 }
 
 export async function processBundleFiles(options: any) {
-  const publicDir = path.resolve("public");
+  const projectRoot = process.cwd(); // 프로젝트 루트 디렉토리
   const distDir = path.resolve("dist");
 
-  if (!publicDir || !distDir) {
+  if (!distDir) {
     if (options.verbose) {
       console.log(
-        `[vite-plugin-animated-webp-optimizer] Required directories not found, skipping`
+        `[vite-plugin-animated-webp-optimizer] Dist directory not found, skipping`
       );
     }
     return;
@@ -43,7 +43,9 @@ export async function processBundleFiles(options: any) {
 
   try {
     const processor = new WebPProcessor(options);
-    await processor.processDirectory(publicDir, distDir);
+
+    // 프로젝트 루트부터 모든 폴더를 재귀적으로 검색
+    await processor.processDirectory(projectRoot, distDir);
 
     if (options.verbose) {
       console.log(`[vite-plugin-animated-webp-optimizer] Build completed.`);
