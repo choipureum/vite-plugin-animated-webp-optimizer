@@ -92,13 +92,11 @@ function findWebpAssets(bundle: any, outDir: string): WebPAsset[] {
       const tempDir = path.join(outDir, ".temp_webp_optimization", "assets");
       const outputPath = path.join(tempDir, fileName);
 
-      // asset.size가 0인 경우 실제 파일 크기를 확인
       let size = asset.size || 0;
       if (size === 0 && fs.existsSync(sourcePath)) {
         try {
           size = fs.statSync(sourcePath).size;
         } catch (error) {
-          // 파일 접근 실패 시 0 유지
           size = 0;
         }
       }

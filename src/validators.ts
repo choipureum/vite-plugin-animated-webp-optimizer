@@ -61,6 +61,7 @@ export function getDefaultOptions(): Required<AnimatedWebpOptimizerOptions> {
   return {
     quality: 80,
     effort: 4,
+    lossless: false,
     verbose: false,
     maxFileSize: 0,
     skipIfSmaller: 0,

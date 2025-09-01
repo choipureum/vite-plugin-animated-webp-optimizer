@@ -9,6 +9,7 @@ A Vite plugin that automatically optimizes animated WebP files to reduce file si
 - **Frame Position Preservation**: Maintains exact frame positions using Sharp's native animation support
 - **Sharp Native Support**: Direct processing without external tools like webpmux
 - **Configurable Quality**: Adjustable quality and compression settings
+- **Compression Mode**: Choose between lossless (quality) and lossy (performance) compression
 - **Size Limits**: Optional file size limits and skip conditions
 - **Resizing Options**: Configurable maximum dimensions
 - **Verbose Logging**: Detailed optimization progress and results
@@ -59,6 +60,7 @@ export default defineConfig({
       // Basic quality settings
       quality: 85, // WebP quality (1-100)
       effort: 4, // Compression effort (0-6)
+      lossless: false, // Enable lossless compression (false = lossy for better performance)
 
       // Animation-specific settings
       animationQuality: 90, // Animation quality (1-100)
@@ -196,10 +198,42 @@ npm run test:coverage
 
 ## 🔧 Configuration Options
 
+### Compression Modes
+
+The plugin supports two compression modes:
+
+#### **Lossy Compression (Default)**
+
+```typescript
+animatedWebpOptimizer({
+  lossless: false, // Default: Fast processing, smaller files
+  quality: 80, // Good balance of quality and size
+  effort: 2, // Fast compression
+});
+```
+
+#### **Lossless Compression**
+
+```typescript
+animatedWebpOptimizer({
+  lossless: true, // Quality preservation, larger files
+  quality: 100, // Maximum quality
+  effort: 4, // Thorough compression
+});
+```
+
+### Performance Comparison
+
+| Mode         | Processing Speed | File Size | Quality | Best For             |
+| ------------ | ---------------- | --------- | ------- | -------------------- |
+| **Lossy**    | ⚡ Fast          | 📉 Small  | 🟡 95%  | Web optimization     |
+| **Lossless** | 🐌 Slow          | 📊 Medium | 🟢 100% | Quality preservation |
+
 | Option                 | Type    | Default | Description                   |
 | ---------------------- | ------- | ------- | ----------------------------- |
 | `quality`              | number  | 80      | WebP quality (1-100)          |
 | `effort`               | number  | 4       | Compression effort (0-6)      |
+| `lossless`             | boolean | false   | Enable lossless compression   |
 | `verbose`              | boolean | false   | Enable detailed logging       |
 | `maxFileSize`          | number  | 0       | Maximum file size limit       |
 | `skipIfSmaller`        | number  | 0       | Skip if file is smaller       |
@@ -269,19 +303,3 @@ npm run build
 ## 📄 License
 
 MIT License - see [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **Sharp Team**: For excellent image processing capabilities
-- **Vite Team**: For the powerful build tool and plugin system
-- **WebP Community**: For the efficient image format
-
-## 📞 Support
-
-- **Issues**: [GitHub Issues](https://github.com/your-repo/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/your-repo/discussions)
-- **Documentation**: [Project Wiki](https://github.com/your-repo/wiki)
-
----
-
-**Made with ❤️ for the Vite community**

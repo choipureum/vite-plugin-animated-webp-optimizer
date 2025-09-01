@@ -58,12 +58,20 @@ export async function optimizeAnimatedWebP(
   options: {
     quality: number;
     effort: number;
+    lossless?: boolean;
     maxWidth: number;
     maxHeight: number;
     verbose?: boolean;
   }
 ): Promise<void> {
-  const { quality, effort, maxWidth, maxHeight, verbose = false } = options;
+  const {
+    quality,
+    effort,
+    lossless = false,
+    maxWidth,
+    maxHeight,
+    verbose = false,
+  } = options;
 
   try {
     if (verbose) {
@@ -106,7 +114,7 @@ export async function optimizeAnimatedWebP(
       quality,
       effort,
       smartSubsample: true,
-      lossless: false,
+      lossless,
       loop: typeof loop === "number" && loop >= 0 ? loop : 0,
       delay: delay || undefined,
       force: true,
@@ -142,10 +150,11 @@ export async function optimizeStaticWebP(
   options: {
     quality: number;
     effort: number;
+    lossless?: boolean;
     verbose?: boolean;
   }
 ): Promise<void> {
-  const { quality, effort, verbose = false } = options;
+  const { quality, effort, lossless = false, verbose = false } = options;
 
   try {
     if (verbose) {
@@ -157,7 +166,7 @@ export async function optimizeStaticWebP(
         quality,
         effort,
         smartSubsample: true,
-        lossless: false,
+        lossless,
       })
       .toFile(outputPath);
 

@@ -12,6 +12,12 @@ export interface AnimatedWebpOptimizerOptions {
   effort?: number;
 
   /**
+   * Enable lossless compression (false = lossy compression for better performance)
+   * @default false
+   */
+  lossless?: boolean;
+
+  /**
    * Enable verbose logging
    * @default false
    */
@@ -84,6 +90,7 @@ export interface ProcessOptions {
   skipIfSmaller: number;
   quality: number;
   effort: number;
+  lossless: boolean;
   animationQuality: number;
   animationCompression: number;
   optimizeAnimation: boolean;
