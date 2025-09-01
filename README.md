@@ -262,6 +262,9 @@ npm run webp:optimize:watch
 
 # Custom settings
 npm run webp:optimize -- --quality=75 --effort=1 --source=src/assets --output=dist/assets
+
+# File size limits
+npm run webp:optimize -- --maxFileSize=10485760 --skipIfSmaller=204800
 ```
 
 ### **Cleanup Script**
@@ -304,14 +307,16 @@ npx webp-clean --dry-run
 
 ### **Script Options**
 
-| Option         | Description                               | Example                                           |
-| -------------- | ----------------------------------------- | ------------------------------------------------- |
-| `--fast`       | Enable fast mode (quality: 60, effort: 1) | `npm run webp:optimize -- --fast`                 |
-| `--watch`      | Watch for file changes                    | `npm run webp:optimize -- --watch`                |
-| `--quality=N`  | Set quality (1-100)                       | `npm run webp:optimize -- --quality=85`           |
-| `--effort=N`   | Set effort (0-6)                          | `npm run webp:optimize -- --effort=3`             |
-| `--source=DIR` | Source directory                          | `npm run webp:optimize -- --source=public/images` |
-| `--output=DIR` | Output directory                          | `npm run webp:optimize -- --output=dist/images`   |
+| Option              | Description                               | Example                                           |
+| ------------------- | ----------------------------------------- | ------------------------------------------------- |
+| `--fast`            | Enable fast mode (quality: 60, effort: 1) | `npm run webp:optimize -- --fast`                 |
+| `--watch`           | Watch for file changes                    | `npm run webp:optimize -- --watch`                |
+| `--quality=N`       | Set quality (1-100)                       | `npm run webp:optimize -- --quality=85`           |
+| `--effort=N`        | Set effort (0-6)                          | `npm run webp:optimize -- --effort=3`             |
+| `--source=DIR`      | Source directory                          | `npm run webp:optimize -- --source=public/images` |
+| `--output=DIR`      | Output directory                          | `npm run webp:optimize -- --output=dist/images`   |
+| `--maxFileSize=N`   | Maximum file size in bytes                | `npm run webp:optimize -- --maxFileSize=5242880`  |
+| `--skipIfSmaller=N` | Skip files smaller than N bytes           | `npm run webp:optimize -- --skipIfSmaller=204800` |
 
 ### **Performance Benefits**
 
