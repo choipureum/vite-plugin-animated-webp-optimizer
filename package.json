@@ -1,7 +1,7 @@
 {
   "name": "vite-plugin-animated-webp-optimizer",
   "version": "1.0.17",
-  "description": "Vite plugin for optimizing animated WebP files with Sharp and webpmux - https://github.com/choipureum/vite-plugin-animated-webp-optimizer",
+  "description": "Vite plugin for optimizing animated WebP files with Sharp and webpmux",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -24,6 +24,11 @@
     "webpmux"
   ],
   "author": "poo1994@ncsoft.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/choipureum/vite-plugin-animated-webp-optimizer"
+  },
+  "homepage": "https://github.com/choipureum/vite-plugin-animated-webp-optimizer",
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^29.5.0",
