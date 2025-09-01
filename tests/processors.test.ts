@@ -23,6 +23,7 @@ describe("WebPProcessor", () => {
       maxWidth: 0,
       maxHeight: 0,
       concurrentImages: 5,
+      outDir: 'dist',
     };
 
     processor = new WebPProcessor(mockOptions);

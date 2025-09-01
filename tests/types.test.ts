@@ -66,6 +66,7 @@ describe("Type Definitions", () => {
         maxWidth: 1920,
         maxHeight: 1080,
         concurrentImages: 5,
+        outDir: 'dist',
       };
 
       expect(options.verbose).toBe(true);

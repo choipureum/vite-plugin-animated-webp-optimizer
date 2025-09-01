@@ -14,6 +14,10 @@ export default function animatedWebpOptimizer(
 
   return {
     name: PLUGIN_NAME,
+    configResolved(config) {
+      // Vite 설정에서 outDir 가져오기
+      mergedOptions.outDir = config.build.outDir || 'dist';
+    },
     async closeBundle() {
       if (mergedOptions.verbose) {
         console.log(`[${PLUGIN_NAME}] Processing bundle files...`);
@@ -30,12 +34,12 @@ export default function animatedWebpOptimizer(
 
 export async function processBundleFiles(options: any) {
   const projectRoot = process.cwd(); // 프로젝트 루트 디렉토리
-  const distDir = path.resolve("dist");
+  const distDir = path.resolve(options.outDir || "dist");
 
   if (!distDir) {
     if (options.verbose) {
       console.log(
-        `[vite-plugin-animated-webp-optimizer] Dist directory not found, skipping`
+        `[vite-plugin-animated-webp-optimizer] Output directory not found, skipping`
       );
     }
     return;
@@ -48,7 +52,7 @@ export async function processBundleFiles(options: any) {
     await processor.processDirectory(projectRoot, distDir);
 
     if (options.verbose) {
-      console.log(`[vite-plugin-animated-webp-optimizer] Build completed.`);
+      console.log(`[${PLUGIN_NAME}] Build completed. Output directory: ${distDir}`);
     }
   } catch (error) {
     if (options.verbose) {

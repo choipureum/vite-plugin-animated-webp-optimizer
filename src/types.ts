@@ -64,6 +64,12 @@ export interface AnimatedWebpOptimizerOptions {
    * @default 5
    */
   concurrentImages?: number;
+
+  /**
+   * Output directory for optimized WebP files
+   * @default 'dist'
+   */
+  outDir?: string;
 }
 
 export interface ProcessOptions {
@@ -78,6 +84,7 @@ export interface ProcessOptions {
   maxWidth: number;
   maxHeight: number;
   concurrentImages: number;
+  outDir: string;
 }
 
 export interface WebPMetadata {
